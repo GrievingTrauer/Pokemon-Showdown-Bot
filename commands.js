@@ -303,6 +303,24 @@ exports.commands = {
 		if (!this.settings.bannedphrases) this.settings.bannedphrases = {};
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
+		var word, level;
+		var commaIndex = arg.lastIndexOf(",");
+		if(commaIndex > -1) {
+			word = arg.substr(0,commaIndex).trim();
+			if(!word){
+				this.say(con, room, "/pm " + by + ", Please specify a word to ban.");
+				return false;
+			}
+			level = parseInt(arg.substring(commaIndex+1));
+			if(isNaN(level) || level < 1 || level > 5){
+				this.say(con, room, "/pm " + by + ", The banlevel must be a valid number between 1 and 5.");
+				return false;
+			}
+		} else {
+			word = arg;
+			level = 2;
+		}
+			
 		var tarRoom = room;
 
 		if (room.charAt(0) === ',') {
@@ -311,10 +329,10 @@ exports.commands = {
 		}
 
 		if (!this.settings.bannedphrases[tarRoom]) this.settings.bannedphrases[tarRoom] = {};
-		if (arg in this.settings.bannedphrases[tarRoom]) return this.say(con, room, "Phrase \"" + arg + "\" is already banned.");
-		this.settings.bannedphrases[tarRoom][arg] = 1;
+		if (word in this.settings.bannedphrases[tarRoom] && this.settings.bannedphrases[tarRoom][word] == level) return this.say(con, room, "Phrase \"" + word + "\" is already banned.");
+		this.settings.bannedphrases[tarRoom][word] = level;
 		this.writeSettings();
-		this.say(con, room, "Phrase \"" + arg + "\" is now banned.");
+		this.say(con, room, "Phrase \"" + word + "\" is now banned with level " + level + ".");
 	},
 	unbanphrase: 'unbanword',
 	unbanword: function(arg, by, room, con) {
@@ -356,9 +374,11 @@ exports.commands = {
 				text = "The phrase \"" + arg + "\" is currently " + (arg in this.settings.bannedphrases[tarRoom] ? "" : "not ") + "banned " +
 					(room.charAt(0) === ',' ? "globally" : "in " + room) + ".";
 			} else {
-				var banList = Object.keys(this.settings.bannedphrases[tarRoom]);
+				var banList = "";
+				for(var x in this.settings.bannedphrases[tarRoom])
+					banList += x + "(" + this.settings.bannedphrases[tarRoom][x] + ")\n";
 				if (!banList.length) return this.say(con, room, "No phrases are banned in this room.");
-				this.uploadToHastebin(con, room, by, "The following phrases are banned " + (room.charAt(0) === ',' ? "globally" : "in " + room) + ":\n\n" + banList.join('\n'))
+				this.uploadToHastebin(con, room, by, "The following phrases are banned " + (room.charAt(0) === ',' ? "globally" : "in " + room) + ":\n\n" + banList)
 				return;
 			}
 		}
