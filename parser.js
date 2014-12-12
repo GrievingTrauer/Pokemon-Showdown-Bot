@@ -391,9 +391,9 @@ exports.parse = {
 			}
 			// moderation for banned words
 			if (useDefault || modSettings['bannedwords'] !== 0 && pointVal < 1) {
-				var banphraseSettings = this.settings.bannedphrases;
+				var banphraseSettings = this.settings.bannedphrases || {};
 				var bannedPhrases = !!banphraseSettings ? (Object.keys(banphraseSettings[room] || {})).concat(Object.keys(banphraseSettings['global'] || {})) : [];
-				var level = Object.merge(banphraseSettings[room] || {}, banphraseSettings['global'] || {});
+				var level = Object.merge((banphraseSettings[room] || {}), (banphraseSettings['global'] || {}));
 				for (var i = 0; i < bannedPhrases.length; i++) {
 					if (msg.toLowerCase().indexOf(bannedPhrases[i]) > -1) {
 						if(pointVal < level[bannedPhrases[i]]) {
