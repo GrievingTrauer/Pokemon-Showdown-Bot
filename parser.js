@@ -50,9 +50,19 @@ exports.parse = {
 		if (message.indexOf('\n') > -1) {
 			var spl = message.split('\n');
 			for (var i = 0, len = spl.length; i < len; i++) {
-				if (spl[i].split('|')[1] && (spl[i].split('|')[1] === 'init' || spl[i].split('|')[1] === 'tournament')) {
-					this.room = '';
-					break;
+				if (spl[i].split('|')[1]) {
+					if(spl[i].split('|')[1] === 'init') {
+						if(spl[i+2].split('|')[1] === 'users') {
+							this.message(spl[i+2], connection, true);
+							break;
+						} else {
+							this.room = '';
+							break;
+						}
+					} else if (spl[i].split('|')[1] === 'tournament') {
+						this.room = '';
+						break;
+					}
 				}
 				this.message(spl[i], connection, i === len - 1);
 			}
@@ -234,6 +244,18 @@ exports.parse = {
 			case 'l': case 'L':
 				var by = spl[2];
 				this.updateSeen(by, spl[1], this.room || 'lobby');
+				if (lastMessage) this.room = '';
+				break;
+			case 'users':
+				var users = spl[2].split(",");
+				users.shift();
+				for(var x in users) {
+					by = users[x];
+					console.log(by);
+					if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) continue;
+					this.ranks[this.room || 'lobby'] = by.charAt(0);
+					break;
+				}
 				if (lastMessage) this.room = '';
 				break;
 		}
