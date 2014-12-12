@@ -394,15 +394,15 @@ exports.commands = {
 	tournament: 'tour',
 	tour: function(arg, by, room, con) {
 		if (room.charAt(0) === ',' || !toId(arg)) return false;
-		if (!this.hasRank(this.ranks[room] || ' ', '#~')) {
+		if (!this.hasRank(this.ranks[room] || ' ', '@#~')) {
 			if (!this.hasRank(by, '+%@&#~')) return false;
-			return this.say(con, room, config.nick + " requires # or higher to use the tournament system.");
+			return this.say(con, room, config.nick + " requires @ or higher to use the tournament system.");
 		}
 		arg = arg.split(',');
 		if (!this.settings.tourwhitelist) this.settings.tourwhitelist = {};
 		if (!this.settings.tourwhitelist[room]) this.settings.tourwhitelist[room] = {};
 		if (toId(arg[0]) === 'whitelist') {
-			if (!this.hasRank(by, '&#~')) return false;
+			if (!this.hasRank(by, '@&#~')) return false;
 			var action = toId(arg[1] || '');
 			if (!action || action === 'view') {
 				var nickList = Object.keys(this.settings.tourwhitelist[room]);
