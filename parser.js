@@ -229,16 +229,16 @@ exports.parse = {
 			case 'N':
 				var by = spl[2];
 				this.updateSeen(spl[3], spl[1], by);
-				if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
-				this.ranks[this.room || 'lobby'] = by.charAt(0);
+				if (' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
+				if (toId(by) === toId(config.nick)) this.ranks[this.room || 'lobby'] = by.charAt(0);
 				if (lastMessage) this.room = '';
 				break;
 			case 'J': case 'j':
 				var by = spl[2];
 				if (this.room && this.isBlacklisted(toId(by), this.room)) this.say(connection, this.room, '/roomban ' + by + ', Blacklisted user');
 				this.updateSeen(by, spl[1], this.room || 'lobby');
-				if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
-				this.ranks[this.room || 'lobby'] = by.charAt(0);
+				if (' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
+				if (toId(by) === toId(config.nick)) this.ranks[this.room || 'lobby'] = by.charAt(0);
 				if (lastMessage) this.room = '';
 				break;
 			case 'l': case 'L':
@@ -252,9 +252,11 @@ exports.parse = {
 				for(var x in users) {
 					by = users[x];
 					console.log(by);
-					if (toId(by) !== toId(config.nick) || ' +%@&#~'.indexOf(by.charAt(0)) === -1) continue;
-					this.ranks[this.room || 'lobby'] = by.charAt(0);
-					break;
+					if (' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
+					if (toId(by) === toId(config.nick)){
+						this.ranks[this.room || 'lobby'] = by.charAt(0);
+						break;
+					}
 				}
 				if (lastMessage) this.room = '';
 				break;
