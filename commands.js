@@ -20,7 +20,7 @@ exports.commands = {
 		} else {
 			var text = '/pm ' + by + ', ';
 		}
-		text += '**Pokémon Showdown Bot** by: Quinella and TalkTakesTime';
+		text += '**Pokémon Showdown Bot** by: Quinella and TalkTakesTime, modified by Freigeist';
 		this.say(con, room, text);
 	},
 	help: 'guide',
@@ -154,7 +154,7 @@ exports.commands = {
 						return;
 					}
 				} else {
-					this.say(con, room, 'Something went wrong. PM TalkTakesTime here or on Smogon with the command you tried.');
+					this.say(con, room, 'Something went wrong. PM Freigeist here or on Smogon with the command you tried.');
 					return;
 				}
 				failsafe++;
