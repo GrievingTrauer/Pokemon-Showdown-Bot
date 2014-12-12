@@ -251,7 +251,6 @@ exports.parse = {
 				users.shift();
 				for(var x in users) {
 					by = users[x];
-					console.log(by);
 					if (' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
 					if (toId(by) === toId(config.nick)){
 						this.ranks[this.room || 'lobby'] = by.charAt(0);
