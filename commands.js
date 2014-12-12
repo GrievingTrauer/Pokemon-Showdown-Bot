@@ -37,6 +37,15 @@ exports.commands = {
 		}
 		this.say(con, room, text);
 	},
+	git: function(arg, by, room, con) {
+		if (this.canUse('git', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			var text = '/pm ' + by + ', ';
+		}
+		text += 'The source of this Bot is available at https://github.com/Freigeist/Pokemon-Showdown-Bot';
+		this.say(con, room, text);
+	},
 
 	/**
 	 * Dev commands
@@ -105,7 +114,8 @@ exports.commands = {
 			guia: 1,
 			studio: 1,
 			'switch': 1,
-			banword: 1
+			banword: 1,
+			git: 1
 		};
 		var modOpts = {
 			flooding: 1,
