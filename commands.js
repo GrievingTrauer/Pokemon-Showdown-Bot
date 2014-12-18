@@ -110,11 +110,13 @@ exports.commands = {
 			wifi: 1,
 			monotype: 1,
 			autoban: 1,
+			viewblacklist: 1,
 			happy: 1,
 			guia: 1,
 			studio: 1,
 			'switch': 1,
 			banword: 1,
+			viewbannedwords: 1,
 			git: 1
 		};
 		var modOpts = {
@@ -285,7 +287,7 @@ exports.commands = {
 	vab: 'viewblacklist',
 	viewautobans: 'viewblacklist',
 	viewblacklist: function(arg, by, room, con) {
-		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
+		if (!this.canUse('viewblacklist', room, by) || room.charAt(0) === ',') return false;
 
 		var text = '';
 		if (!this.settings.blacklist || !this.settings.blacklist[room]) {
@@ -367,7 +369,7 @@ exports.commands = {
 	viewbannedphrases: 'viewbannedwords',
 	vbw: 'viewbannedwords',
 	viewbannedwords: function(arg, by, room, con) {
-		if (!this.canUse('banword', room, by)) return false;
+		if (!this.canUse('viewbannedwords', room, by)) return false;
 		arg = arg.trim().toLowerCase();
 		var tarRoom = room;
 
