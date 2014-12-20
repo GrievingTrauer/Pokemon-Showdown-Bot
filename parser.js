@@ -339,33 +339,31 @@ exports.parse = {
 							}
 							if(!jsonObj.results) break;
 							if(!jsonObj.generator) break;
-							if(jsonObj.generator.match(/elimination/i)){
-								var w = toId(jsonObj.results[0]);
-								var l = toId(this.tours[this.room].lastbattle.l);
-								if(!this.tourstats.users[w]) this.tourstats.users[w] = {};
-								if(!this.tourstats.users[l]) this.tourstats.users[l] = {};
-								this.tourstats.users[w].wins = (this.tourstats.users[w].wins || 0) + 1;
-								this.tourstats.users[l].second = (this.tourstats.users[l].second || 0) + 1;
-							} else if (jsonObj.generator.match(/round robin/i)) {
+							if(jsonObj.results[0]) {
 								for(var x in jsonObj.results[0]){
 									var u = toId(jsonObj.results[0][x]);
 									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].wins = (this.tourstats.users[u].wins || 0) + 1;
 								}
-								if(jsonObj.results[1]) {
-									for(var x in jsonObj.results[1]){
-										var u = toId(jsonObj.results[1][x]);
-										if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
-										this.tourstats.users[u].second = (this.tourstats.users[u].second || 0) + 1;
-									}
+							}
+							if(jsonObj.results[1]) {
+								for(var x in jsonObj.results[1]){
+									var u = toId(jsonObj.results[1][x]);
+									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+									this.tourstats.users[u].second = (this.tourstats.users[u].second || 0) + 1;
 								}
-								if(jsonObj.results[2]) {
-									for(var x in jsonObj.results[2]){
-										var u = toId(jsonObj.results[2][x]);
-										if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
-										this.tourstats.users[u].third = (this.tourstats.users[u].third || 0) + 1;
-									}
+							} else if (this.tours[this.room].lastbattle.l) {
+								var l = toId(this.tours[this.room].lastbattle.l);
+								if(!this.tourstats.users[l]) this.tourstats.users[l] = {};
+								this.tourstats.users[l].second = (this.tourstats.users[l].second || 0) + 1;
+							}
+							if(jsonObj.results[2]) {
+								for(var x in jsonObj.results[2]){
+									var u = toId(jsonObj.results[2][x]);
+									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+									this.tourstats.users[u].third = (this.tourstats.users[u].third || 0) + 1;
 								}
+							}
 							}
 						}
 						this.writeTourstats();
