@@ -25,12 +25,20 @@ try {
 	if (!Object.keys(settings).length && settings !== {}) settings = {};
 } catch (e) {} // file doesn't exist [yet]
 
+tourstats = {};
+try {
+	tourstats = JSON.parse(fs.readFileSync('tourstats.json'));
+	if (!Object.keys(tourstats).length && tourstats !== {}) tourstats = {};
+} catch (e) {} // file doesn't exist [yet]
+
 exports.parse = {
 	actionUrl: url.parse('https://play.pokemonshowdown.com/~~' + config.serverid + '/action.php'),
 	room: 'lobby',
 	'settings': settings,
+	'tourstats': tourstats,
 	chatData: {},
 	ranks: {},
+	tours: {},
 
 	data: function(data, connection) {
 		if (data.substr(0, 1) === 'a') {
@@ -59,9 +67,6 @@ exports.parse = {
 							this.room = '';
 							break;
 						}
-					} else if (spl[i].split('|')[1] === 'tournament') {
-						this.room = '';
-						break;
 					}
 				}
 				this.message(spl[i], connection, i === len - 1);
@@ -256,6 +261,128 @@ exports.parse = {
 						this.ranks[this.room || 'lobby'] = by.charAt(0);
 						break;
 					}
+				}
+				if (lastMessage) this.room = '';
+				break;
+			// TODO: Simplify tournament part...
+			case 'tournament':
+				if(!this.tours[this.room]) this.tours[this.room] = {format:null, lastbattle:null};
+				if(!this.tourstats.rooms) this.tourstats.rooms = {};
+				if(!this.tourstats.users) this.tourstats.users = {};
+				if(!this.tourstats.rooms[this.room]) this.tourstats.rooms[this.room] = {formats:{}};
+				switch(spl[2]){
+					case "create":
+						var format = spl[3];
+						this.tours[this.room].format = format;
+						var roomstats = this.tourstats.rooms[this.room];
+						if(!roomstats.formats[format]) roomstats.formats[format] = {};
+						roomstats.count = (roomstats.count || 0) + 1;
+						roomstats.formats[format].count = (roomstats.formats[format].count || 0) + 1;
+						this.writeTourstats();
+						break;
+					case "join":
+						if(!this.tours[this.room].format) break;
+						var uid = toId(spl[3]);
+						if(!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
+						this.tourstats.users[uid].count = (this.tourstats.users[uid].count || 0) + 1;
+						break;
+					case "leave":
+						if(!this.tours[this.room].format) break;
+						var uid = toId(spl[3]);
+						if(!this.tourstats.users[uid] && !this.tourstats.users[uid].count) break;
+						this.tourstats.users[uid].count -= 1;
+						if(this.tourstats.users[uid].count <= 0) delete this.tourstats.users[uid].count;
+						if(!Object.keys(this.tourstats.users[uid]).length) delete this.tourstats.users[uid];
+						break;
+					case "disqualify":
+						if(!this.tours[this.room].format) break;
+						var uid = toId(spl[3]);
+						if(!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
+						this.tourstats.users[uid].dq = (this.tourstats.users[uid].dq || 0) + 1;
+						this.writeTourstats();
+						break;
+					case "start":
+						if(!this.tours[this.room].format) break;
+						this.writeTourstats();
+						break;
+					case "battleend":
+						if(!this.tours[this.room].format) break;
+						if(spl[5] === "win"){
+							this.tours[this.room].lastbattle = {w:toId(spl[3]),l:toId(spl[4])};
+						} else {
+							this.tours[this.room].lastbattle = {w:toId(spl[4]),l:toId(spl[3])};
+						}
+						
+						var lb = this.tours[this.room].lastbattle;
+						
+						if(!this.tourstats.users[lb.w]) this.tourstats.users[lb.w] = {};
+						this.tourstats.users[lb.w].b = (this.tourstats.users[lb.w].b || 0) + 1;
+						this.tourstats.users[lb.w].bwon = (this.tourstats.users[lb.w].bwon || 0) + 1;
+						
+						if(!this.tourstats.users[lb.l]) this.tourstats.users[lb.l] = {};
+						this.tourstats.users[lb.l].b = (this.tourstats.users[lb.l].b || 0) + 1;
+						this.tourstats.users[lb.l].blost = (this.tourstats.users[lb.l].blost || 0) + 1;
+						// This is going to be written with end or forceend...
+						break;
+					case "end":
+						var roomstats = this.tourstats.rooms[this.room];
+						var format = this.tours[this.room].format;
+						if(this.tours[this.room].format) {
+							if(!roomstats.formats[format]) roomstats.formats[format] = {};
+							roomstats.finished = (roomstats.finished || 0) + 1;
+							roomstats.formats[format].finished = (roomstats.formats[format].finished || 0) + 1;
+							try {
+								var jsonObj = JSON.parse(spl[3]);
+							} catch(e) {
+								console.error(e.stack);
+								break;
+							}
+							if(!jsonObj.results) break;
+							if(!jsonObj.generator) break;
+							if(jsonObj.generator.match(/elimination/i)){
+								var w = toId(jsonObj.results[0]);
+								var l = toId(this.tours[this.room].lastbattle.l);
+								if(!this.tourstats.users[w]) this.tourstats.users[w] = {};
+								if(!this.tourstats.users[l]) this.tourstats.users[l] = {};
+								this.tourstats.users[w].wins = (this.tourstats.users[w].wins || 0) + 1;
+								this.tourstats.users[l].second = (this.tourstats.users[l].second || 0) + 1;
+							} else if (jsonObj.generator.match(/round robin/i)) {
+								for(var x in jsonObj.results[0]){
+									var u = toId(jsonObj.results[0][x]);
+									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+									this.tourstats.users[u].wins = (this.tourstats.users[u].wins || 0) + 1;
+								}
+								if(jsonObj.results[1]) {
+									for(var x in jsonObj.results[1]){
+										var u = toId(jsonObj.results[1][x]);
+										if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+										this.tourstats.users[u].second = (this.tourstats.users[u].second || 0) + 1;
+									}
+								}
+								if(jsonObj.results[2]) {
+									for(var x in jsonObj.results[2]){
+										var u = toId(jsonObj.results[2][x]);
+										if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+										this.tourstats.users[u].third = (this.tourstats.users[u].third || 0) + 1;
+									}
+								}
+							}
+						}
+						this.writeTourstats();
+						this.tours[this.room].format = null;
+						this.tours[this.room].lastbattle = null;
+						break;
+					case "forceend":
+						var roomstats = this.tourstats.rooms[this.room];
+						var format = this.tours[this.room].format;
+						if(this.tours[this.room].format) {
+							roomstats.canceled = (roomstats.canceled || 0) + 1;
+							roomstats.formats[format].canceled = (roomstats.formats[format].canceled || 0) + 1;
+						}
+						this.writeTourstats();
+						this.tours[this.room].format = null;
+						this.tours[this.room].lastbattle = null;
+						break;
 				}
 				if (lastMessage) this.room = '';
 				break;
@@ -533,6 +660,37 @@ exports.parse = {
 					if (err) {
 						// This should only happen on Windows.
 						fs.writeFile('settings.json', data, finishWriting);
+						return;
+					}
+					finishWriting();
+				});
+			});
+		};
+	})(),
+	// TODO: Write a writeJSON(_filename, _var) function...
+	writeTourstats: (function() {
+		var writing = false;
+		var writePending = false; // whether or not a new write is pending
+		var finishWriting = function() {
+			writing = false;
+			if (writePending) {
+				writePending = false;
+				this.writeSettings();
+			}
+		};
+		return function() {
+			if (writing) {
+				writePending = true;
+				return;
+			}
+			writing = true;
+			var data = JSON.stringify(this.tourstats);
+			fs.writeFile('tourstats.json.0', data, function() {
+				// rename is atomic on POSIX, but will throw an error on Windows
+				fs.rename('tourstats.json.0', 'tourstats.json', function(err) {
+					if (err) {
+						// This should only happen on Windows.
+						fs.writeFile('tourstats.json', data, finishWriting);
 						return;
 					}
 					finishWriting();
