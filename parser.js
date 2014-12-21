@@ -364,7 +364,6 @@ exports.parse = {
 									this.tourstats.users[u].third = (this.tourstats.users[u].third || 0) + 1;
 								}
 							}
-							}
 						}
 						this.writeTourstats();
 						this.tours[this.room].format = null;
