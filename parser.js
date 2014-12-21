@@ -291,7 +291,7 @@ exports.parse = {
 						if(!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
 						if(uid.match(/^guest/i)) break;
-						if(!this.tourstats.users[uid] && !this.tourstats.users[uid].count) break;
+						if(!this.tourstats.users[uid] || !this.tourstats.users[uid].count) break;
 						this.tourstats.users[uid].count -= 1;
 						if(this.tourstats.users[uid].count <= 0) delete this.tourstats.users[uid].count;
 						if(!Object.keys(this.tourstats.users[uid]).length) delete this.tourstats.users[uid];
@@ -299,9 +299,9 @@ exports.parse = {
 					case "disqualify":
 						if(!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
+						if(uid.match(/^guest/i)) break;
 						if(!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
 						this.tourstats.users[uid].dq = (this.tourstats.users[uid].dq || 0) + 1;
-						this.writeTourstats();
 						break;
 					case "start":
 						if(!this.tours[this.room].format) break;
@@ -698,10 +698,10 @@ exports.parse = {
 				fs.rename('tourstats.json.0', 'tourstats.json', function(err) {
 					if (err) {
 						// This should only happen on Windows.
-						fs.writeFile('tourstats.json', data, finishWriting);
+						fs.writeFile('tourstats.json', data, finishWriting.bind(this));
 						return;
 					}
-					finishWriting();
+					finishWriting.call(this);
 				});
 			});
 		};
