@@ -283,12 +283,14 @@ exports.parse = {
 					case "join":
 						if(!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
+						if(uid.match(/^guest/i)) break;
 						if(!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
 						this.tourstats.users[uid].count = (this.tourstats.users[uid].count || 0) + 1;
 						break;
 					case "leave":
 						if(!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
+						if(uid.match(/^guest/i)) break;
 						if(!this.tourstats.users[uid] && !this.tourstats.users[uid].count) break;
 						this.tourstats.users[uid].count -= 1;
 						if(this.tourstats.users[uid].count <= 0) delete this.tourstats.users[uid].count;
@@ -315,13 +317,17 @@ exports.parse = {
 						
 						var lb = this.tours[this.room].lastbattle;
 						
-						if(!this.tourstats.users[lb.w]) this.tourstats.users[lb.w] = {};
-						this.tourstats.users[lb.w].b = (this.tourstats.users[lb.w].b || 0) + 1;
-						this.tourstats.users[lb.w].bwon = (this.tourstats.users[lb.w].bwon || 0) + 1;
+						if(!lb.w.match(/^guest/i)){
+							if(!this.tourstats.users[lb.w]) this.tourstats.users[lb.w] = {};
+							this.tourstats.users[lb.w].b = (this.tourstats.users[lb.w].b || 0) + 1;
+							this.tourstats.users[lb.w].bwon = (this.tourstats.users[lb.w].bwon || 0) + 1;
+						}
 						
-						if(!this.tourstats.users[lb.l]) this.tourstats.users[lb.l] = {};
-						this.tourstats.users[lb.l].b = (this.tourstats.users[lb.l].b || 0) + 1;
-						this.tourstats.users[lb.l].blost = (this.tourstats.users[lb.l].blost || 0) + 1;
+						if(!lb.l.match(/^guest/i)){
+							if(!this.tourstats.users[lb.l]) this.tourstats.users[lb.l] = {};
+							this.tourstats.users[lb.l].b = (this.tourstats.users[lb.l].b || 0) + 1;
+							this.tourstats.users[lb.l].blost = (this.tourstats.users[lb.l].blost || 0) + 1;
+						}
 						// This is going to be written with end or forceend...
 						break;
 					case "end":
@@ -342,6 +348,7 @@ exports.parse = {
 							if(jsonObj.results[0]) {
 								for(var x in jsonObj.results[0]){
 									var u = toId(jsonObj.results[0][x]);
+									if(u.match(/^guest/i)) continue;
 									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].wins = (this.tourstats.users[u].wins || 0) + 1;
 								}
@@ -349,17 +356,21 @@ exports.parse = {
 							if(jsonObj.results[1]) {
 								for(var x in jsonObj.results[1]){
 									var u = toId(jsonObj.results[1][x]);
+									if(u.match(/^guest/i)) continue;
 									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].second = (this.tourstats.users[u].second || 0) + 1;
 								}
 							} else if (this.tours[this.room].lastbattle.l) {
 								var l = toId(this.tours[this.room].lastbattle.l);
-								if(!this.tourstats.users[l]) this.tourstats.users[l] = {};
-								this.tourstats.users[l].second = (this.tourstats.users[l].second || 0) + 1;
+								if(!l.match(/^guest/i)) {
+									if(!this.tourstats.users[l]) this.tourstats.users[l] = {};
+									this.tourstats.users[l].second = (this.tourstats.users[l].second || 0) + 1;
+								}
 							}
 							if(jsonObj.results[2]) {
 								for(var x in jsonObj.results[2]){
 									var u = toId(jsonObj.results[2][x]);
+									if(u.match(/^guest/i)) continue;
 									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].third = (this.tourstats.users[u].third || 0) + 1;
 								}
