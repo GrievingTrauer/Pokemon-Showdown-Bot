@@ -683,7 +683,7 @@ exports.parse = {
 			writing = false;
 			if (writePending) {
 				writePending = false;
-				this.writeSettings();
+				this.writeTourstats();
 			}
 		};
 		return function() {
