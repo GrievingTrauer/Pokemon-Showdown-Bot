@@ -46,6 +46,15 @@ exports.commands = {
 		text += 'The source of this Bot is available at https://github.com/Freigeist/Pokemon-Showdown-Bot';
 		this.say(con, room, text);
 	},
+	orascalc: function(arg, by, room, con) {
+		if (this.canUse('git', room, by) || room.charAt(0) === ',') {
+			var text = '';
+		} else {
+			var text = '/pm ' + by + ', ';
+		}
+		text += 'http://gamut-was-taken.github.io';
+		this.say(con, room, text);
+	},
 
 	/**
 	 * Dev commands
