@@ -21,13 +21,13 @@ const MIN_CAPS_PROPORTION = 0.8;
 
 var settings = {};
 try {
-	settings = JSON.parse(fs.readFileSync('settings.json'));
+	settings = JSON.parse(fs.readFileSync('./config/settings.json'));
 	if (!Object.keys(settings).length && settings !== {}) settings = {};
 } catch (e) {} // file doesn't exist [yet]
 
 var tourstats = {};
 try {
-	tourstats = JSON.parse(fs.readFileSync('tourstats.json'));
+	tourstats = JSON.parse(fs.readFileSync('./config/tourstats.json'));
 	if (!Object.keys(tourstats).length && tourstats !== {}) tourstats = {};
 } catch (e) {} // file doesn't exist [yet]
 
@@ -664,12 +664,12 @@ exports.parse = {
 			}
 			writing = true;
 			var data = JSON.stringify(this.settings);
-			fs.writeFile('settings.json.0', data, function () {
+			fs.writeFile('./config/settings.json.0', data, function () {
 				// rename is atomic on POSIX, but will throw an error on Windows
-				fs.rename('settings.json.0', 'settings.json', function (err) {
+				fs.rename('./config/settings.json.0', 'settings.json', function (err) {
 					if (err) {
 						// This should only happen on Windows.
-						fs.writeFile('settings.json', data, finishWriting);
+						fs.writeFile('./config/settings.json', data, finishWriting);
 						return;
 					}
 					finishWriting();
@@ -695,12 +695,12 @@ exports.parse = {
 			}
 			writing = true;
 			var data = JSON.stringify(this.tourstats);
-			fs.writeFile('tourstats.json.0', data, function () {
+			fs.writeFile('./config/tourstats.json.0', data, function () {
 				// rename is atomic on POSIX, but will throw an error on Windows
-				fs.rename('tourstats.json.0', 'tourstats.json', function (err) {
+				fs.rename('./config/tourstats.json.0', 'tourstats.json', function (err) {
 					if (err) {
 						// This should only happen on Windows.
-						fs.writeFile('tourstats.json', data, finishWriting.bind(this));
+						fs.writeFile('./config/tourstats.json', data, finishWriting.bind(this));
 						return;
 					}
 					finishWriting.call(this);

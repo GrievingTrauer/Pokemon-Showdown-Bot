@@ -1,9 +1,7 @@
 ﻿/node_modules
 /node_modules/*
+/config/*
 npm-debug.log
-config.js
-settings.json
-tourstats.json
 
 .hg
 .bzr

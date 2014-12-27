@@ -22,7 +22,7 @@ To install dependencies, run:
 
     npm install
 
-Copy `config-example.js` to `config.js` and edit the needed variables.
+Copy `config/config-example.js` to `config/config.js` and edit the needed variables.
 To change the commands that the bot responds to, edit `commands.js`.
 
 Now, to start the bot, use:

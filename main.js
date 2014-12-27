@@ -100,12 +100,12 @@ if (!('existsSync' in fs)) {
 	fs.existsSync = require('path').existsSync;
 }
 
-if (!fs.existsSync('./config.js')) {
-	error('config.js doesn\'t exist; are you sure you copied config-example.js to config.js?');
+if (!fs.existsSync('./config/config.js')) {
+	error('config/config.js doesn\'t exist; are you sure you copied config-example.js to config.js?');
 	process.exit(-1);
 }
 
-global.config = require('./config.js');
+global.config = require('./config/config.js');
 global.cleanChatData = function (chatData) {
 	for (var user in chatData) {
 		for (var room in chatData[user]) {
@@ -144,11 +144,11 @@ var watchFile = function () {
 };
 
 if (config.watchconfig) {
-	watchFile('./config.js', function (curr, prev) {
+	watchFile('./config/config.js', function (curr, prev) {
 		if (curr.mtime <= prev.mtime) return;
 		try {
-			delete require.cache[require.resolve('./config.js')];
-			global.config = require('./config.js');
+			delete require.cache[require.resolve('./config/config.js')];
+			global.config = require('./config/config.js');
 			info('reloaded config.js');
 			checkCommandCharacter();
 		} catch (e) {}
