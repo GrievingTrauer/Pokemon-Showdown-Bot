@@ -22,14 +22,14 @@ if (process.argv[2]) {
 		path: '/crossdomain.php?host=' + serverUrl + '&path=',
 		method: 'GET'
 	};
-	var req = http.request(requestOptions, function(res) {
+	var req = http.request(requestOptions, function (res) {
 		res.setEncoding('utf8');
-		res.on('data', function(chunk) {
+		res.on('data', function (chunk) {
 			if (received) {
 				return;
 			}
 			received = true;
-			
+
 			var search = 'var config = ';
 			var index = chunk.indexOf(search);
 			if (index !== -1) {
@@ -45,11 +45,11 @@ if (process.argv[2]) {
 			}
 		});
 	});
-	
+
 	req.on('error', function (err) {
 		console.log('ERROR: ' + sys.inspect(err));
 	});
-	
+
 	req.end();
 } else {
 	console.log('ERROR: no URL specified!');

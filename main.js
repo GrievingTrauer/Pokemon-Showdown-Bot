@@ -8,56 +8,56 @@
  * @license MIT license
  */
 
-global.info = function(text) {
+global.info = function (text) {
 	if (config.debuglevel > 3) return;
 	if (!colors) global.colors = require('colors');
 	console.log('info'.cyan + '  ' + text);
 };
 
-global.debug = function(text) {
+global.debug = function (text) {
 	if (config.debuglevel > 2) return;
 	if (!colors) global.colors = require('colors');
 	console.log('debug'.blue + ' ' + text);
 };
 
-global.recv = function(text) {
+global.recv = function (text) {
 	if (config.debuglevel > 0) return;
 	if (!colors) global.colors = require('colors');
 	console.log('recv'.grey + '  ' + text);
 };
 
-global.cmdr = function(text) { // receiving commands
+global.cmdr = function (text) { // receiving commands
 	if (config.debuglevel !== 1) return;
 	if (!colors) global.colors = require('colors');
 	console.log('cmdr'.grey + '  ' + text);
 };
 
-global.dsend = function(text) {
+global.dsend = function (text) {
 	if (config.debuglevel > 1) return;
 	if (!colors) global.colors = require('colors');
 	console.log('send'.grey + '  ' + text);
 };
 
-global.error = function(text) {
+global.error = function (text) {
 	if (!colors) global.colors = require('colors');
 	console.log('error'.red + ' ' + text);
 };
 
-global.ok = function(text) {
+global.ok = function (text) {
 	if (config.debuglevel > 4) return;
 	if (!colors) global.colors = require('colors');
 	console.log('ok'.green + '    ' + text);
 };
 
-global.toId = function(text) {
+global.toId = function (text) {
 	return text.toLowerCase().replace(/[^a-z0-9]/g, '');
 };
 
-global.stripCommands = function(text) {
-	return ((text.trim().charAt(0) === '/') ? '/' : ((text.trim().charAt(0) === '!') ? ' ':'')) + text.trim();
+global.stripCommands = function (text) {
+	return ((text.trim().charAt(0) === '/') ? '/' : ((text.trim().charAt(0) === '!') ? ' ' : '')) + text.trim();
 };
 
-global.send = function(connection, data) {
+global.send = function (connection, data) {
 	if (connection.connected) {
 		if (!(data instanceof Array)) {
 			data = [data.toString()];
@@ -69,38 +69,20 @@ global.send = function(connection, data) {
 };
 
 function runNpm(command) {
-	console.log('Running `npm ' + command + '`...');
-
-	var child_process = require('child_process');
-	var npm = child_process.spawn('npm', [command]);
-
-	npm.stdout.on('data', function(data) {
-		process.stdout.write(data);
-	});
-
-	npm.stderr.on('data', function(data) {
-		process.stderr.write(data);
-	});
-
-	npm.on('close', function(code) {
-		if (!code) {
-			child_process.fork('main.js').disconnect();
-		}
-	});
+	command = 'npm ' + command + ' && ' + process.execPath + ' app.js';
+	console.log('Running `' + command + '`...');
+	require('child_process').spawn('sh', ['-c', command], {stdio: 'inherit', detached: true});
+	process.exit(0);
 }
 
-// Check if everything that is needed is available
 try {
 	require('sugar');
 	require('colors');
 } catch (e) {
-	console.log('Dependencies are not installed!');
-	return runNpm('install');
+	runNpm('install');
 }
-
 if (!Object.select) {
-	console.log('Node needs to be updated!');
-	return runNpm('update');
+	runNpm('update');
 }
 
 // First dependencies and welcome message
@@ -124,7 +106,7 @@ if (!fs.existsSync('./config.js')) {
 }
 
 global.config = require('./config.js');
-global.cleanChatData = function(chatData) {
+global.cleanChatData = function (chatData) {
 	for (var user in chatData) {
 		for (var room in chatData[user]) {
 			if (!chatData[user][room].times || !chatData[user][room].times.length) {
@@ -134,7 +116,7 @@ global.cleanChatData = function(chatData) {
 			var newTimes = [];
 			var now = Date.now();
 			for (var i in chatData[user][room].times) {
-					if ((now - chatData[user][room].times[i]) < 5*1000) newTimes.push(chatData[user][room].times[i]);
+				if ((now - chatData[user][room].times[i]) < 5 * 1000) newTimes.push(chatData[user][room].times[i]);
 			}
 			newTimes.sort();
 			chatData[user][room].times = newTimes;
@@ -144,7 +126,7 @@ global.cleanChatData = function(chatData) {
 	return chatData;
 };
 
-var checkCommandCharacter = function() {
+var checkCommandCharacter = function () {
 	if (!/[^a-z0-9 ]/i.test(config.commandcharacter)) {
 		error('invalid command character; should at least contain one non-alphanumeric character');
 		process.exit(-1);
@@ -153,7 +135,7 @@ var checkCommandCharacter = function() {
 
 checkCommandCharacter();
 
-var watchFile = function() {
+var watchFile = function () {
 	try {
 		return fs.watchFile.apply(fs, arguments);
 	} catch (e) {
@@ -162,11 +144,11 @@ var watchFile = function() {
 };
 
 if (config.watchconfig) {
-	watchFile('./config.js', function(curr, prev) {
+	watchFile('./config.js', function (curr, prev) {
 		if (curr.mtime <= prev.mtime) return;
 		try {
 			delete require.cache[require.resolve('./config.js')];
-			config = require('./config.js');
+			global.config = require('./config.js');
 			info('reloaded config.js');
 			checkCommandCharacter();
 		} catch (e) {}
@@ -180,40 +162,40 @@ var WebSocketClient = require('websocket').client;
 global.Commands = require('./commands.js').commands;
 global.Parse = require('./parser.js').parse;
 
-var connect = function(retry) {
+var connect = function (retry) {
 	if (retry) {
 		info('retrying...');
 	}
 
 	var ws = new WebSocketClient();
 
-	ws.on('connectFailed', function(err) {
+	ws.on('connectFailed', function (err) {
 		error('Could not connect to server ' + config.server + ': ' + sys.inspect(err));
 		info('retrying in one minute');
 
-		setTimeout(function() {
+		setTimeout(function () {
 			connect(true);
 		}, 60000);
 	});
 
-	ws.on('connect', function(connection) {
+	ws.on('connect', function (connection) {
 		ok('connected to server ' + config.server);
 
-		connection.on('error', function(err) {
+		connection.on('error', function (err) {
 			error('connection error: ' + sys.inspect(err));
 		});
 
-		connection.on('close', function() {
+		connection.on('close', function () {
 			// Is this always error or can this be intended...?
 			error('connection closed: ' + sys.inspect(arguments));
 			info('retrying in one minute');
 
-			setTimeout(function() {
+			setTimeout(function () {
 				connect(true);
 			}, 60000);
 		});
 
-		connection.on('message', function(message) {
+		connection.on('message', function (message) {
 			if (message.type === 'utf8') {
 				recv(sys.inspect(message.utf8Data));
 				Parse.data(message.utf8Data, connection);

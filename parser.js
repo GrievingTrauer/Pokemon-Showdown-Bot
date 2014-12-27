@@ -12,20 +12,20 @@ var sys = require('sys');
 var https = require('https');
 var url = require('url');
 
-const ACTION_COOLDOWN = 3*1000;
+const ACTION_COOLDOWN = 3 * 1000;
 const FLOOD_MESSAGE_NUM = 5;
 const FLOOD_PER_MSG_MIN = 500; // this is the minimum time between messages for legitimate spam. It's used to determine what "flooding" is caused by lag
-const FLOOD_MESSAGE_TIME = 6*1000;
+const FLOOD_MESSAGE_TIME = 6 * 1000;
 const MIN_CAPS_LENGTH = 18;
 const MIN_CAPS_PROPORTION = 0.8;
 
-settings = {};
+var settings = {};
 try {
 	settings = JSON.parse(fs.readFileSync('settings.json'));
 	if (!Object.keys(settings).length && settings !== {}) settings = {};
 } catch (e) {} // file doesn't exist [yet]
 
-tourstats = {};
+var tourstats = {};
 try {
 	tourstats = JSON.parse(fs.readFileSync('tourstats.json'));
 	if (!Object.keys(tourstats).length && tourstats !== {}) tourstats = {};
@@ -40,7 +40,7 @@ exports.parse = {
 	ranks: {},
 	tours: {},
 
-	data: function(data, connection) {
+	data: function (data, connection) {
 		if (data.substr(0, 1) === 'a') {
 			data = JSON.parse(data.substr(1));
 			if (data instanceof Array) {
@@ -52,16 +52,16 @@ exports.parse = {
 			}
 		}
 	},
-	message: function(message, connection, lastMessage) {
+	message: function (message, connection, lastMessage) {
 		if (!message) return;
 
 		if (message.indexOf('\n') > -1) {
 			var spl = message.split('\n');
 			for (var i = 0, len = spl.length; i < len; i++) {
 				if (spl[i].split('|')[1]) {
-					if(spl[i].split('|')[1] === 'init') {
-						if(spl[i+2].split('|')[1] === 'users') {
-							this.message(spl[i+2], connection, true);
+					if (spl[i].split('|')[1] === 'init') {
+						if (spl[i + 2].split('|')[1] === 'users') {
+							this.message(spl[i + 2], connection, true);
 							break;
 						} else {
 							this.room = '';
@@ -94,25 +94,26 @@ exports.parse = {
 					agent: false
 				};
 
+				var data;
 				if (!config.pass) {
 					requestOptions.method = 'GET';
 					requestOptions.path += '?act=getassertion&userid=' + toId(config.nick) + '&challengekeyid=' + id + '&challenge=' + str;
 				} else {
 					requestOptions.method = 'POST';
-					var data = 'act=login&name=' + config.nick + '&pass=' + config.pass + '&challengekeyid=' + id + '&challenge=' + str;
+					data = 'act=login&name=' + config.nick + '&pass=' + config.pass + '&challengekeyid=' + id + '&challenge=' + str;
 					requestOptions.headers = {
 						'Content-Type': 'application/x-www-form-urlencoded',
 						'Content-Length': data.length
 					};
 				}
 
-				var req = https.request(requestOptions, function(res) {
-					res.setEncoding('utf8');
+				var req = https.request(requestOptions, function (res) {
 					var data = '';
-					res.on('data', function(chunk) {
+					res.setEncoding('utf8');
+					res.on('data', function (chunk) {
 						data += chunk;
 					});
-					res.on('end', function() {
+					res.on('end', function () {
 						if (data === ';') {
 							error('failed to log in; nick is registered - invalid or no password given');
 							process.exit(-1);
@@ -124,7 +125,7 @@ exports.parse = {
 
 						if (data.indexOf('heavy load') !== -1) {
 							error('the login server is under heavy load; trying again in one minute');
-							setTimeout(function() {
+							setTimeout(function () {
 								this.message(message);
 							}.bind(this), 60000);
 							return;
@@ -143,7 +144,7 @@ exports.parse = {
 					}.bind(this));
 				}.bind(this));
 
-				req.on('error', function(err) {
+				req.on('error', function (err) {
 					error('login error: ' + sys.inspect(err));
 				});
 
@@ -165,7 +166,7 @@ exports.parse = {
 				ok('logged in as ' + spl[2]);
 
 				// Now join the rooms
-				var cmds = ['|/idle','/avatar 39'];
+				var cmds = ['|/idle', '/avatar 39'];
 				for (var i in config.rooms) {
 					var room = toId(config.rooms[i]);
 					if (room === 'lobby' && config.serverid === 'showdown') {
@@ -184,7 +185,7 @@ exports.parse = {
 				var self = this;
 				if (cmds.length > 4) {
 					self.nextJoin = 0;
-					self.joinSpacer = setInterval(function(con, cmds) {
+					self.joinSpacer = setInterval(function (con, cmds) {
 						if (cmds.length > self.nextJoin + 3) {
 							send(con, cmds.slice(self.nextJoin, self.nextJoin + 3));
 							self.nextJoin += 3;
@@ -193,14 +194,14 @@ exports.parse = {
 							delete self.nextJoin;
 							clearInterval(self.joinSpacer);
 						}
-					}, 4*1000, connection, cmds);
+					}, 4 * 1000, connection, cmds);
 				} else {
 					send(connection, cmds);
 				}
 
 				this.chatDataTimer = setInterval(
-					function() {self.chatData = cleanChatData(self.chatData);},
-					30*60*1000
+					function () {self.chatData = cleanChatData(self.chatData);},
+					30 * 60 * 1000
 				);
 				if (lastMessage) this.room = '';
 				break;
@@ -254,10 +255,10 @@ exports.parse = {
 			case 'users':
 				var users = spl[2].split(",");
 				users.shift();
-				for(var x in users) {
+				for (var x in users) {
 					by = users[x];
 					if (' +%@&#~'.indexOf(by.charAt(0)) === -1) return;
-					if (toId(by) === toId(config.nick)){
+					if (toId(by) === toId(config.nick)) {
 						this.ranks[this.room || 'lobby'] = by.charAt(0);
 						break;
 					}
@@ -266,65 +267,65 @@ exports.parse = {
 				break;
 			// TODO: Simplify tournament part...
 			case 'tournament':
-				if(!this.tours[this.room]) this.tours[this.room] = {format:null, lastbattle:null};
-				if(!this.tourstats.rooms) this.tourstats.rooms = {};
-				if(!this.tourstats.users) this.tourstats.users = {};
-				if(!this.tourstats.rooms[this.room]) this.tourstats.rooms[this.room] = {formats:{}};
-				switch(spl[2]){
+				if (!this.tours[this.room]) this.tours[this.room] = {format:null, lastbattle:null};
+				if (!this.tourstats.rooms) this.tourstats.rooms = {};
+				if (!this.tourstats.users) this.tourstats.users = {};
+				if (!this.tourstats.rooms[this.room]) this.tourstats.rooms[this.room] = {formats:{}};
+				switch (spl[2]) {
 					case "create":
 						var format = spl[3];
 						this.tours[this.room].format = format;
 						var roomstats = this.tourstats.rooms[this.room];
-						if(!roomstats.formats[format]) roomstats.formats[format] = {};
+						if (!roomstats.formats[format]) roomstats.formats[format] = {};
 						roomstats.count = (roomstats.count || 0) + 1;
 						roomstats.formats[format].count = (roomstats.formats[format].count || 0) + 1;
 						this.writeTourstats();
 						break;
 					case "join":
-						if(!this.tours[this.room].format) break;
+						if (!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
-						if(uid.match(/^guest/i)) break;
-						if(!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
+						if (uid.match(/^guest/i)) break;
+						if (!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
 						this.tourstats.users[uid].count = (this.tourstats.users[uid].count || 0) + 1;
 						break;
 					case "leave":
-						if(!this.tours[this.room].format) break;
+						if (!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
-						if(uid.match(/^guest/i)) break;
-						if(!this.tourstats.users[uid] || !this.tourstats.users[uid].count) break;
+						if (uid.match(/^guest/i)) break;
+						if (!this.tourstats.users[uid] || !this.tourstats.users[uid].count) break;
 						this.tourstats.users[uid].count -= 1;
-						if(this.tourstats.users[uid].count <= 0) delete this.tourstats.users[uid].count;
-						if(!Object.keys(this.tourstats.users[uid]).length) delete this.tourstats.users[uid];
+						if (this.tourstats.users[uid].count <= 0) delete this.tourstats.users[uid].count;
+						if (!Object.keys(this.tourstats.users[uid]).length) delete this.tourstats.users[uid];
 						break;
 					case "disqualify":
-						if(!this.tours[this.room].format) break;
+						if (!this.tours[this.room].format) break;
 						var uid = toId(spl[3]);
-						if(uid.match(/^guest/i)) break;
-						if(!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
+						if (uid.match(/^guest/i)) break;
+						if (!this.tourstats.users[uid]) this.tourstats.users[uid] = {};
 						this.tourstats.users[uid].dq = (this.tourstats.users[uid].dq || 0) + 1;
 						break;
 					case "start":
-						if(!this.tours[this.room].format) break;
+						if (!this.tours[this.room].format) break;
 						this.writeTourstats();
 						break;
 					case "battleend":
-						if(!this.tours[this.room].format) break;
-						if(spl[5] === "win"){
-							this.tours[this.room].lastbattle = {w:toId(spl[3]),l:toId(spl[4])};
+						if (!this.tours[this.room].format) break;
+						if (spl[5] === "win") {
+							this.tours[this.room].lastbattle = {w:toId(spl[3]), l:toId(spl[4])};
 						} else {
-							this.tours[this.room].lastbattle = {w:toId(spl[4]),l:toId(spl[3])};
+							this.tours[this.room].lastbattle = {w:toId(spl[4]), l:toId(spl[3])};
 						}
-						
+
 						var lb = this.tours[this.room].lastbattle;
-						
-						if(!lb.w.match(/^guest/i)){
-							if(!this.tourstats.users[lb.w]) this.tourstats.users[lb.w] = {};
+
+						if (!lb.w.match(/^guest/i)) {
+							if (!this.tourstats.users[lb.w]) this.tourstats.users[lb.w] = {};
 							this.tourstats.users[lb.w].b = (this.tourstats.users[lb.w].b || 0) + 1;
 							this.tourstats.users[lb.w].bwon = (this.tourstats.users[lb.w].bwon || 0) + 1;
 						}
-						
-						if(!lb.l.match(/^guest/i)){
-							if(!this.tourstats.users[lb.l]) this.tourstats.users[lb.l] = {};
+
+						if (!lb.l.match(/^guest/i)) {
+							if (!this.tourstats.users[lb.l]) this.tourstats.users[lb.l] = {};
 							this.tourstats.users[lb.l].b = (this.tourstats.users[lb.l].b || 0) + 1;
 							this.tourstats.users[lb.l].blost = (this.tourstats.users[lb.l].blost || 0) + 1;
 						}
@@ -333,45 +334,46 @@ exports.parse = {
 					case "end":
 						var roomstats = this.tourstats.rooms[this.room];
 						var format = this.tours[this.room].format;
-						if(this.tours[this.room].format) {
-							if(!roomstats.formats[format]) roomstats.formats[format] = {};
+						if (this.tours[this.room].format) {
+							if (!roomstats.formats[format]) roomstats.formats[format] = {};
 							roomstats.finished = (roomstats.finished || 0) + 1;
 							roomstats.formats[format].finished = (roomstats.formats[format].finished || 0) + 1;
+							var jsonObj;
 							try {
-								var jsonObj = JSON.parse(spl[3]);
-							} catch(e) {
+								jsonObj = JSON.parse(spl[3]);
+							} catch (e) {
 								console.error(e.stack);
 								break;
 							}
-							if(!jsonObj.results) break;
-							if(!jsonObj.generator) break;
-							if(jsonObj.results[0]) {
-								for(var x in jsonObj.results[0]){
+							if (!jsonObj.results) break;
+							if (!jsonObj.generator) break;
+							if (jsonObj.results[0]) {
+								for (var x in jsonObj.results[0]) {
 									var u = toId(jsonObj.results[0][x]);
-									if(u.match(/^guest/i)) continue;
-									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+									if (u.match(/^guest/i)) continue;
+									if (!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].wins = (this.tourstats.users[u].wins || 0) + 1;
 								}
 							}
-							if(jsonObj.results[1]) {
-								for(var x in jsonObj.results[1]){
+							if (jsonObj.results[1]) {
+								for (var x in jsonObj.results[1]) {
 									var u = toId(jsonObj.results[1][x]);
-									if(u.match(/^guest/i)) continue;
-									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+									if (u.match(/^guest/i)) continue;
+									if (!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].second = (this.tourstats.users[u].second || 0) + 1;
 								}
 							} else if (this.tours[this.room].lastbattle.l) {
 								var l = toId(this.tours[this.room].lastbattle.l);
-								if(!l.match(/^guest/i)) {
-									if(!this.tourstats.users[l]) this.tourstats.users[l] = {};
+								if (!l.match(/^guest/i)) {
+									if (!this.tourstats.users[l]) this.tourstats.users[l] = {};
 									this.tourstats.users[l].second = (this.tourstats.users[l].second || 0) + 1;
 								}
 							}
-							if(jsonObj.results[2]) {
-								for(var x in jsonObj.results[2]){
+							if (jsonObj.results[2]) {
+								for (var x in jsonObj.results[2]) {
 									var u = toId(jsonObj.results[2][x]);
-									if(u.match(/^guest/i)) continue;
-									if(!this.tourstats.users[u]) this.tourstats.users[u] = {};
+									if (u.match(/^guest/i)) continue;
+									if (!this.tourstats.users[u]) this.tourstats.users[u] = {};
 									this.tourstats.users[u].third = (this.tourstats.users[u].third || 0) + 1;
 								}
 							}
@@ -383,7 +385,7 @@ exports.parse = {
 					case "forceend":
 						var roomstats = this.tourstats.rooms[this.room];
 						var format = this.tours[this.room].format;
-						if(this.tours[this.room].format) {
+						if (this.tours[this.room].format) {
 							roomstats.canceled = (roomstats.canceled || 0) + 1;
 							roomstats.formats[format].canceled = (roomstats.formats[format].canceled || 0) + 1;
 						}
@@ -396,7 +398,7 @@ exports.parse = {
 				break;
 		}
 	},
-	chatMessage: function(message, by, room, connection) {
+	chatMessage: function (message, by, room, connection) {
 		var cmdrMessage = '["' + room + '|' + by + '|' + message + '"]';
 		message = message.trim();
 		if (message.substr(0, config.commandcharacter.length) !== config.commandcharacter || toId(by) === toId(config.nick)) {
@@ -406,11 +408,12 @@ exports.parse = {
 		message = message.substr(config.commandcharacter.length);
 		var index = message.indexOf(' ');
 		var arg = '';
+		var cmd;
 		if (index > -1) {
-			var cmd = message.substr(0, index);
+			cmd = message.substr(0, index);
 			arg = message.substr(index + 1).trim();
 		} else {
-			var cmd = message;
+			cmd = message;
 		}
 
 		if (Commands[cmd]) {
@@ -426,7 +429,7 @@ exports.parse = {
 			}
 		}
 	},
-	say: function(connection, room, text) {
+	say: function (connection, room, text) {
 		if (room.substr(0, 1) !== ',') {
 			var str = (room !== 'lobby' ? room : '') + '|' + text;
 			send(connection, str);
@@ -436,11 +439,11 @@ exports.parse = {
 			send(connection, str);
 		}
 	},
-	hasRank: function(user, rank) {
+	hasRank: function (user, rank) {
 		var hasRank = (rank.split('').indexOf(user.charAt(0)) !== -1) || (config.excepts.indexOf(toId(user.substr(1))) !== -1);
 		return hasRank;
 	},
-	canUse: function(cmd, room, user) {
+	canUse: function (cmd, room, user) {
 		var canUse = false;
 		var ranks = ' +%@&#~';
 		if (!this.settings[cmd] || !(room in this.settings[cmd])) {
@@ -452,10 +455,10 @@ exports.parse = {
 		}
 		return canUse;
 	},
-	isBlacklisted: function(user, room) {
+	isBlacklisted: function (user, room) {
 		return (this.settings.blacklist && this.settings.blacklist[room] && this.settings.blacklist[room][user]);
 	},
-	blacklistUser: function(user, room) {
+	blacklistUser: function (user, room) {
 		if (!this.settings['blacklist']) this.settings['blacklist'] = {};
 		if (!this.settings.blacklist[room]) this.settings.blacklist[room] = {};
 
@@ -463,12 +466,12 @@ exports.parse = {
 		this.settings.blacklist[room][user] = 1;
 		return true;
 	},
-	unblacklistUser: function(user, room) {
+	unblacklistUser: function (user, room) {
 		if (!this.isBlacklisted(user, room)) return false;
 		delete this.settings.blacklist[room][user];
 		return true;
 	},
-	uploadToHastebin: function(con, room, by, toUpload) {
+	uploadToHastebin: function (con, room, by, toUpload) {
 		var self = this;
 
 		var reqOpts = {
@@ -477,8 +480,8 @@ exports.parse = {
 			path: '/documents'
 		};
 
-		var req = require('http').request(reqOpts, function(res) {
-			res.on('data', function(chunk) {
+		var req = require('http').request(reqOpts, function (res) {
+			res.on('data', function (chunk) {
 				self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + "hastebin.com/raw/" + JSON.parse(chunk.toString())['key']);
 			});
 		});
@@ -486,7 +489,7 @@ exports.parse = {
 		req.write(toUpload);
 		req.end();
 	},
-	processChatData: function(user, room, connection, msg) {
+	processChatData: function (user, room, connection, msg) {
 		// NOTE: this is still in early stages
 		if (toId(user.substr(1)) === toId(config.nick)) {
 			this.ranks[room] = user.charAt(0);
@@ -531,7 +534,7 @@ exports.parse = {
 				var level = Object.merge((banphraseSettings[room] || {}), (banphraseSettings['global'] || {}));
 				for (var i = 0; i < bannedPhrases.length; i++) {
 					if (msg.toLowerCase().indexOf(bannedPhrases[i]) > -1) {
-						if(pointVal < level[bannedPhrases[i]]) {
+						if (pointVal < level[bannedPhrases[i]]) {
 							pointVal = level[bannedPhrases[i]] || 2;
 							muteMessage = ', Automated response: your message contained a banned phrase';
 						}
@@ -540,8 +543,7 @@ exports.parse = {
 			}
 			// moderation for flooding (more than x lines in y seconds)
 			var times = chatData.times;
-			var isFlooding = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME
-				&& (time - times[times.length - FLOOD_MESSAGE_NUM]) > (FLOOD_PER_MSG_MIN * FLOOD_MESSAGE_NUM));
+			var isFlooding = (times.length >= FLOOD_MESSAGE_NUM && (time - times[times.length - FLOOD_MESSAGE_NUM]) < FLOOD_MESSAGE_TIME && (time - times[times.length - FLOOD_MESSAGE_NUM]) > (FLOOD_PER_MSG_MIN * FLOOD_MESSAGE_NUM));
 			if ((useDefault || modSettings['flooding'] !== 0) && isFlooding) {
 				if (pointVal < 2) {
 					pointVal = 2;
@@ -565,7 +567,7 @@ exports.parse = {
 				}
 			}
 
-			if (pointVal > 0 && !(time - chatData.lastAction < ACTION_COOLDOWN)) {
+			if (pointVal > 0 && (time - chatData.lastAction >= ACTION_COOLDOWN)) {
 				var cmd = 'mute';
 				// defaults to the next punishment in config.punishVals instead of repeating the same action (so a second warn-worthy
 				// offence would result in a mute instead of a warn, and the third an hourmute, etc)
@@ -590,7 +592,7 @@ exports.parse = {
 		}
 	},
 
-	updateSeen: function(user, type, detail) {
+	updateSeen: function (user, type, detail) {
 		user = toId(user);
 		type = toId(type);
 		if (type !== 'n' && config.rooms.indexOf(detail) === -1 || config.privaterooms.indexOf(toId(detail)) > -1) return;
@@ -621,50 +623,50 @@ exports.parse = {
 		this.chatData[user].lastSeen = msg;
 		this.chatData[user].seenAt = time;
 	},
-	getTimeAgo: function(time) {
+	getTimeAgo: function (time) {
 		time = Date.now() - time;
-		time = Math.round(time/1000); // rounds to nearest second
-		var seconds = time%60;
+		time = Math.round(time / 1000); // rounds to nearest second
+		var seconds = time % 60;
 		var times = [];
-		if (seconds) times.push(String(seconds) + (seconds === 1?' second':' seconds'));
+		if (seconds) times.push(String(seconds) + (seconds === 1 ? ' second' : ' seconds'));
 		var minutes, hours, days;
 		if (time >= 60) {
-			time = (time - seconds)/60; // converts to minutes
-			minutes = time%60;
-			if (minutes) times = [String(minutes) + (minutes === 1?' minute':' minutes')].concat(times);
+			time = (time - seconds) / 60; // converts to minutes
+			minutes = time % 60;
+			if (minutes) times = [String(minutes) + (minutes === 1 ? ' minute' : ' minutes')].concat(times);
 			if (time >= 60) {
-				time = (time - minutes)/60; // converts to hours
-				hours = time%24;
-				if (hours) times = [String(hours) + (hours === 1?' hour':' hours')].concat(times);
+				time = (time - minutes) / 60; // converts to hours
+				hours = time % 24;
+				if (hours) times = [String(hours) + (hours === 1 ? ' hour' : ' hours')].concat(times);
 				if (time >= 24) {
-					days = (time - hours)/24; // you can probably guess this one
-					if (days) times = [String(days) + (days === 1?' day':' days')].concat(times);
+					days = (time - hours) / 24; // you can probably guess this one
+					if (days) times = [String(days) + (days === 1 ? ' day' : ' days')].concat(times);
 				}
 			}
 		}
 		if (!times.length) times.push('0 seconds');
 		return times.join(', ');
 	},
-	writeSettings: (function() {
+	writeSettings: (function () {
 		var writing = false;
 		var writePending = false; // whether or not a new write is pending
-		var finishWriting = function() {
+		var finishWriting = function () {
 			writing = false;
 			if (writePending) {
 				writePending = false;
 				this.writeSettings();
 			}
 		};
-		return function() {
+		return function () {
 			if (writing) {
 				writePending = true;
 				return;
 			}
 			writing = true;
 			var data = JSON.stringify(this.settings);
-			fs.writeFile('settings.json.0', data, function() {
+			fs.writeFile('settings.json.0', data, function () {
 				// rename is atomic on POSIX, but will throw an error on Windows
-				fs.rename('settings.json.0', 'settings.json', function(err) {
+				fs.rename('settings.json.0', 'settings.json', function (err) {
 					if (err) {
 						// This should only happen on Windows.
 						fs.writeFile('settings.json', data, finishWriting);
@@ -676,26 +678,26 @@ exports.parse = {
 		};
 	})(),
 	// TODO: Write a writeJSON(_filename, _var) function...
-	writeTourstats: (function() {
+	writeTourstats: (function () {
 		var writing = false;
 		var writePending = false; // whether or not a new write is pending
-		var finishWriting = function() {
+		var finishWriting = function () {
 			writing = false;
 			if (writePending) {
 				writePending = false;
 				this.writeTourstats();
 			}
 		};
-		return function() {
+		return function () {
 			if (writing) {
 				writePending = true;
 				return;
 			}
 			writing = true;
 			var data = JSON.stringify(this.tourstats);
-			fs.writeFile('tourstats.json.0', data, function() {
+			fs.writeFile('tourstats.json.0', data, function () {
 				// rename is atomic on POSIX, but will throw an error on Windows
-				fs.rename('tourstats.json.0', 'tourstats.json', function(err) {
+				fs.rename('tourstats.json.0', 'tourstats.json', function (err) {
 					if (err) {
 						// This should only happen on Windows.
 						fs.writeFile('tourstats.json', data, finishWriting.bind(this));
@@ -706,14 +708,14 @@ exports.parse = {
 			});
 		};
 	})(),
-	uncacheTree: function(root) {
+	uncacheTree: function (root) {
 		var uncache = [require.resolve(root)];
 		do {
 			var newuncache = [];
 			for (var i = 0; i < uncache.length; ++i) {
 				if (require.cache[uncache[i]]) {
 					newuncache.push.apply(newuncache,
-						require.cache[uncache[i]].children.map(function(module) {
+						require.cache[uncache[i]].children.map(function (module) {
 							return module.filename;
 						})
 					);

@@ -14,21 +14,23 @@ exports.commands = {
 	 * These commands are here to provide information about the bot.
 	 */
 
-	about: function(arg, by, room, con) {
+	about: function (arg, by, room, con) {
+		var text;
 		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
-			var text = '';
+			text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			text = '/pm ' + by + ', ';
 		}
 		text += '**Pokémon Showdown Bot** by: Quinella and TalkTakesTime, modified by Freigeist';
 		this.say(con, room, text);
 	},
 	help: 'guide',
-	guide: function(arg, by, room, con) {
+	guide: function (arg, by, room, con) {
+		var text;
 		if (this.hasRank(by, '#~') || room.charAt(0) === ',') {
-			var text = '';
+			text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			text = '/pm ' + by + ', ';
 		}
 		if (config.botguide) {
 			text += 'A guide on how to use this bot can be found here: ' + config.botguide;
@@ -37,20 +39,22 @@ exports.commands = {
 		}
 		this.say(con, room, text);
 	},
-	git: function(arg, by, room, con) {
+	git: function (arg, by, room, con) {
+		var text;
 		if (this.canUse('git', room, by) || room.charAt(0) === ',') {
-			var text = '';
+			text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			text = '/pm ' + by + ', ';
 		}
 		text += 'The source of this Bot is available at https://github.com/Freigeist/Pokemon-Showdown-Bot';
 		this.say(con, room, text);
 	},
-	orascalc: function(arg, by, room, con) {
+	orascalc: function (arg, by, room, con) {
+		var text;
 		if (this.canUse('git', room, by) || room.charAt(0) === ',') {
-			var text = '';
+			text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			text = '/pm ' + by + ', ';
 		}
 		text += 'http://gamut-was-taken.github.io';
 		this.say(con, room, text);
@@ -64,30 +68,31 @@ exports.commands = {
 	 * or to help with upkeep of the bot.
 	 */
 
-	reload: function(arg, by, room, con) {
+	reload: function (arg, by, room, con) {
 		if (!this.hasRank(by, '#~')) return false;
 		try {
 			this.uncacheTree('./commands.js');
-			Commands = require('./commands.js').commands;
+			global.Commands = require('./commands.js').commands;
 			this.say(con, room, 'Commands reloaded.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));
 		}
 	},
-	custom: function(arg, by, room, con) {
+	custom: function (arg, by, room, con) {
 		if (!this.hasRank(by, '~')) return false;
 		// Custom commands can be executed in an arbitrary room using the syntax
 		// ".custom [room] command", e.g., to do !data pikachu in the room lobby,
 		// the command would be ".custom [lobby] !data pikachu". However, using
 		// "[" and "]" in the custom command to be executed can mess this up, so
 		// be careful with them.
+		var tarRoom;
 		if (arg.indexOf('[') === 0 && arg.indexOf(']') > -1) {
-			var tarRoom = arg.slice(1, arg.indexOf(']'));
+			tarRoom = arg.slice(1, arg.indexOf(']'));
 			arg = arg.substr(arg.indexOf(']') + 1).trim();
 		}
 		this.say(con, tarRoom || room, arg);
 	},
-	js: function(arg, by, room, con) {
+	js: function (arg, by, room, con) {
 		if (config.excepts.indexOf(toId(by)) === -1) return false;
 		try {
 			var result = eval(arg.trim());
@@ -104,7 +109,7 @@ exports.commands = {
 	 */
 
 	settings: 'set',
-	set: function(arg, by, room, con) {
+	set: function (arg, by, room, con) {
 		if (!this.hasRank(by, '%@&#~') || room.charAt(0) === ',') return false;
 
 		var settable = {
@@ -206,7 +211,7 @@ exports.commands = {
 				} else if (this.settings[cmd][room] === true) {
 					msg = '.' + cmd + ' is available for all users in this room.';
 				} else if (this.settings[cmd][room] === false) {
-					msg = '' + config.commandcharacter+''+ cmd + ' is not available for use in this room.';
+					msg = '' + config.commandcharacter + '' + cmd + ' is not available for use in this room.';
 				}
 				this.say(con, room, msg);
 				return;
@@ -219,14 +224,14 @@ exports.commands = {
 				this.writeSettings();
 				this.say(con, room, 'The command ' + config.commandcharacter + '' + cmd + ' is now ' +
 					(settingsLevels[newRank] === newRank ? ' available for users of rank ' + newRank + ' and above.' :
-					(this.settings[cmd][room] ? 'available for all users in this room.' : 'unavailable for use in this room.')))
+					(this.settings[cmd][room] ? 'available for all users in this room.' : 'unavailable for use in this room.')));
 			}
 		}
 	},
 	blacklist: 'autoban',
 	ban: 'autoban',
 	ab: 'autoban',
-	autoban: function(arg, by, room, con) {
+	autoban: function (arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + ' requires rank of @ or higher to (un)blacklist.');
 
@@ -246,7 +251,7 @@ exports.commands = {
 				continue;
 			}
 			this.say(con, room, '/roomban ' + tarUser + ', Blacklisted user');
-			this.say(con,room, '/modnote ' + tarUser + ' was added to the blacklist by ' + by + '.');
+			this.say(con, room, '/modnote ' + tarUser + ' was added to the blacklist by ' + by + '.');
 			added.push(tarUser);
 		}
 
@@ -262,7 +267,7 @@ exports.commands = {
 	unblacklist: 'unautoban',
 	unban: 'unautoban',
 	unab: 'unautoban',
-	unautoban: function(arg, by, room, con) {
+	unautoban: function (arg, by, room, con) {
 		if (!this.canUse('autoban', room, by) || room.charAt(0) === ',') return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@&#~')) return this.say(con, room, config.nick + ' requires rank of @ or higher to (un)blacklist.');
 
@@ -295,7 +300,7 @@ exports.commands = {
 	viewbans: 'viewblacklist',
 	vab: 'viewblacklist',
 	viewautobans: 'viewblacklist',
-	viewblacklist: function(arg, by, room, con) {
+	viewblacklist: function (arg, by, room, con) {
 		if (!this.canUse('viewblacklist', room, by) || room.charAt(0) === ',') return false;
 
 		var text = '';
@@ -312,28 +317,28 @@ exports.commands = {
 			} else {
 				var nickList = Object.keys(this.settings.blacklist[room]);
 				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', No users are blacklisted in this room.');
-				this.uploadToHastebin(con, room, by, 'The following users are banned in ' + room + ':\n\n' + nickList.join('\n'))
+				this.uploadToHastebin(con, room, by, 'The following users are banned in ' + room + ':\n\n' + nickList.join('\n'));
 				return;
 			}
 		}
 		this.say(con, room, '/pm ' + by + ', ' + text);
 	},
 	banphrase: 'banword',
-	banword: function(arg, by, room, con) {
+	banword: function (arg, by, room, con) {
 		if (!this.canUse('banword', room, by)) return false;
 		if (!this.settings.bannedphrases) this.settings.bannedphrases = {};
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
 		var word, level;
 		var commaIndex = arg.lastIndexOf(",");
-		if(commaIndex > -1) {
-			word = arg.substr(0,commaIndex).trim();
-			if(!word){
+		if (commaIndex > -1) {
+			word = arg.substr(0, commaIndex).trim();
+			if (!word) {
 				this.say(con, room, "/pm " + by + ", Please specify a word to ban.");
 				return false;
 			}
-			level = parseInt(arg.substring(commaIndex+1));
-			if(isNaN(level) || level < 1 || level > 5){
+			level = parseInt(arg.substring(commaIndex + 1));
+			if (isNaN(level) || level < 1 || level > 5) {
 				this.say(con, room, "/pm " + by + ", The banlevel must be a valid number between 1 and 5.");
 				return false;
 			}
@@ -341,7 +346,7 @@ exports.commands = {
 			word = arg;
 			level = 2;
 		}
-			
+
 		var tarRoom = room;
 
 		if (room.charAt(0) === ',') {
@@ -350,13 +355,13 @@ exports.commands = {
 		}
 
 		if (!this.settings.bannedphrases[tarRoom]) this.settings.bannedphrases[tarRoom] = {};
-		if (word in this.settings.bannedphrases[tarRoom] && this.settings.bannedphrases[tarRoom][word] == level) return this.say(con, room, "Phrase \"" + word + "\" is already banned.");
+		if (word in this.settings.bannedphrases[tarRoom] && this.settings.bannedphrases[tarRoom][word] === level) return this.say(con, room, "Phrase \"" + word + "\" is already banned.");
 		this.settings.bannedphrases[tarRoom][word] = level;
 		this.writeSettings();
 		this.say(con, room, "Phrase \"" + word + "\" is now banned with level " + level + ".");
 	},
 	unbanphrase: 'unbanword',
-	unbanword: function(arg, by, room, con) {
+	unbanword: function (arg, by, room, con) {
 		if (!this.canUse('banword', room, by)) return false;
 		arg = arg.trim().toLowerCase();
 		if (!arg) return false;
@@ -367,7 +372,7 @@ exports.commands = {
 			tarRoom = 'global';
 		}
 
-		if (!this.settings.bannedphrases || !this.settings.bannedphrases[tarRoom] || !(arg in this.settings.bannedphrases[tarRoom])) 
+		if (!this.settings.bannedphrases || !this.settings.bannedphrases[tarRoom] || !(arg in this.settings.bannedphrases[tarRoom]))
 			return this.say(con, room, "Phrase \"" + arg + "\" is not currently banned.");
 		delete this.settings.bannedphrases[tarRoom][arg];
 		if (!Object.size(this.settings.bannedphrases[tarRoom])) delete this.settings.bannedphrases[tarRoom];
@@ -377,7 +382,7 @@ exports.commands = {
 	},
 	viewbannedphrases: 'viewbannedwords',
 	vbw: 'viewbannedwords',
-	viewbannedwords: function(arg, by, room, con) {
+	viewbannedwords: function (arg, by, room, con) {
 		if (!this.canUse('viewbannedwords', room, by)) return false;
 		arg = arg.trim().toLowerCase();
 		var tarRoom = room;
@@ -396,10 +401,10 @@ exports.commands = {
 					(room.charAt(0) === ',' ? "globally" : "in " + room) + ".";
 			} else {
 				var banList = "";
-				for(var x in this.settings.bannedphrases[tarRoom])
+				for (var x in this.settings.bannedphrases[tarRoom])
 					banList += x + "(" + this.settings.bannedphrases[tarRoom][x] + ")\n";
 				if (!banList.length) return this.say(con, room, "No phrases are banned in this room.");
-				this.uploadToHastebin(con, room, by, "The following phrases are banned " + (room.charAt(0) === ',' ? "globally" : "in " + room) + ":\n\n" + banList)
+				this.uploadToHastebin(con, room, by, "The following phrases are banned " + (room.charAt(0) === ',' ? "globally" : "in " + room) + ":\n\n" + banList);
 				return;
 			}
 		}
@@ -413,7 +418,7 @@ exports.commands = {
 	 */
 
 	tournament: 'tour',
-	tour: function(arg, by, room, con) {
+	tour: function (arg, by, room, con) {
 		if (room.charAt(0) === ',' || !toId(arg)) return false;
 		if (!this.hasRank(this.ranks[room] || ' ', '@#~')) {
 			if (!this.hasRank(by, '+%@&#~')) return false;
@@ -441,17 +446,16 @@ exports.commands = {
 			}
 			this.writeSettings();
 		} else {
-			if (!(this.hasRank(by, (toId(arg[0].split(' ')[0]) in {'dq': 1, 'disqualify': 1} ? '%@' : '') + '&#~') || toId(by) in this.settings.tourwhitelist[room])
-				|| toId(arg[0]) in {'join': 1, 'in': 1, 'j': 1}) return false;
+			if (!(this.hasRank(by, (toId(arg[0].split(' ')[0]) in {'dq': 1, 'disqualify': 1} ? '%@' : '') + '&#~') || toId(by) in this.settings.tourwhitelist[room]) || toId(arg[0]) in {'join': 1, 'in': 1, 'j': 1}) return false;
 			this.say(con, room, "/tour " + arg.join(','));
 		}
 	},
 	tell: 'say',
-	say: function(arg, by, room, con) {
+	say: function (arg, by, room, con) {
 		if (!this.canUse('say', room, by)) return false;
 		this.say(con, room, stripCommands(arg) + ' (' + by + ' said this)');
 	},
-	joke: function(arg, by, room, con) {
+	joke: function (arg, by, room, con) {
 		if (!this.canUse('joke', room, by) || room.charAt(0) === ',') return false;
 		var self = this;
 
@@ -460,8 +464,8 @@ exports.commands = {
 			path: '/jokes/random',
 			method: 'GET'
 		};
-		var req = http.request(reqOpt, function(res) {
-			res.on('data', function(chunk) {
+		var req = http.request(reqOpt, function (res) {
+			res.on('data', function (chunk) {
 				try {
 					var data = JSON.parse(chunk);
 					self.say(con, room, data.value.joke.replace(/&quot;/g, "\""));
@@ -472,29 +476,31 @@ exports.commands = {
 		});
 		req.end();
 	},
-	choose: function(arg, by, room, con) {
+	choose: function (arg, by, room, con) {
+		var choices;
 		if (arg.indexOf(',') === -1) {
-			var choices = arg.split(' ');
+			choices = arg.split(' ');
 		} else {
-			var choices = arg.split(',');
+			choices = arg.split(',');
 		}
-		choices = choices.filter(function(i) {return (toId(i) !== '')});
-		if (choices.length < 2) return this.say(con, room, (room.charAt(0) === ',' ? '': '/pm ' + by + ', ') + '.choose: You must give at least 2 valid choices.');
+		choices = choices.filter(function (i) {return (toId(i) !== '');});
+		if (choices.length < 2) return this.say(con, room, (room.charAt(0) === ',' ? '' : '/pm ' + by + ', ') + '.choose: You must give at least 2 valid choices.');
 
-		var choice = choices[Math.floor(Math.random()*choices.length)];
-		this.say(con, room, ((this.canUse('choose', room, by) || room.charAt(0) === ',') ? '':'/pm ' + by + ', ') + stripCommands(choice));
+		var choice = choices[Math.floor(Math.random() * choices.length)];
+		this.say(con, room, ((this.canUse('choose', room, by) || room.charAt(0) === ',') ? '' : '/pm ' + by + ', ') + stripCommands(choice));
 	},
 	usage: 'usagestats',
-	usagestats: function(arg, by, room, con) {
+	usagestats: function (arg, by, room, con) {
+		var text;
 		if (this.canUse('usagestats', room, by) || room.charAt(0) === ',') {
-			var text = '';
+			text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			text = '/pm ' + by + ', ';
 		}
 		text += 'http://www.smogon.com/stats/2014-11/';
 		this.say(con, room, text);
 	},
-	seen: function(arg, by, room, con) { // this command is still a bit buggy
+	seen: function (arg, by, room, con) { // this command is still a bit buggy
 		var text = (room.charAt(0) === ',' ? '' : '/pm ' + by + ', ');
 		arg = toId(arg);
 		if (!arg || arg.length > 18) return this.say(con, room, text + 'Invalid username.');
@@ -510,18 +516,19 @@ exports.commands = {
 		}
 		this.say(con, room, text);
 	},
-	helix: function(arg, by, room, con) {
+	helix: function (arg, by, room, con) {
+		var text;
 		if (this.canUse('helix', room, by) || room.charAt(0) === ',') {
-			var text = '';
+			text = '';
 		} else {
-			var text = '/pm ' + by + ', ';
+			text = '/pm ' + by + ', ';
 		}
 
 		var rand = Math.floor(20 * Math.random()) + 1;
 
 		switch (rand) {
-	 		case 1: text += "Signs point to yes."; break;
-	  		case 2: text += "Yes."; break;
+			case 1: text += "Signs point to yes."; break;
+			case 2: text += "Yes."; break;
 			case 3: text += "Reply hazy, try again."; break;
 			case 4: text += "Without a doubt."; break;
 			case 5: text += "My sources say no."; break;
@@ -542,12 +549,12 @@ exports.commands = {
 			case 20: text += "Don't count on it."; break;
 		}
 		this.say(con, room, text);
-	},
+	}
 
 	/**
 	 * Room specific commands
 	 *
 	 * These commands are used in specific rooms on the Smogon server.
 	 */
-	
+
 };

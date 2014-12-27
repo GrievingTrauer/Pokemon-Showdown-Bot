@@ -12,7 +12,7 @@ Installation
 [Click here][4] for an in-depth installation guide, courtesy of Rival Nick. Otherwise, basic instructions follow.
 
 Pokémon Showdown Bot requires [node.js][2] to run.
-This bot has not been tested on every `node.js` version possible, but has the same version requirements as [Pokémon Showdown][3]: either v0.6.3 through v0.8.22, or v0.10.2 and up.
+This bot has not been tested on every `node.js` version possible, but has the same version requirements as [Pokémon Showdown][3]: v0.10.2 and up.
 Install `node.js` if you don't have it yet, try the last stable version.
 
 Next up is cloning this bot. This can be done in two ways: cloning it via `git` or downloading as ZIP.
@@ -42,6 +42,7 @@ Everyone is more than welcome to contribute to the bot.
 However, please refrain from adding more example commands.
 
 Credits:
+ - Freigeist (Development)
  - TalkTakesTime (Development)
  - Quinella (Development)
  - Rival Nick (Guide)
