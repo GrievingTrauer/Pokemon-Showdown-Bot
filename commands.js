@@ -125,13 +125,11 @@ exports.commands = {
 			monotype: 1,
 			autoban: 1,
 			viewblacklist: 1,
-			happy: 1,
-			guia: 1,
-			studio: 1,
 			'switch': 1,
 			banword: 1,
 			viewbannedwords: 1,
-			git: 1
+			git: 1,
+			modchat: 1
 		};
 		var modOpts = {
 			flooding: 1,
@@ -449,6 +447,12 @@ exports.commands = {
 			if (!(this.hasRank(by, (toId(arg[0].split(' ')[0]) in {'dq': 1, 'disqualify': 1} ? '%@' : '') + '&#~') || toId(by) in this.settings.tourwhitelist[room]) || toId(arg[0]) in {'join': 1, 'in': 1, 'j': 1}) return false;
 			this.say(con, room, "/tour " + arg.join(','));
 		}
+	},
+	modchat: function (arg, by, room, con) {
+		if (!this.canUse('modchat', room, by)) return false;
+		if (!arg) return false;
+		if (arg.toLowerCase() in {'off': 1, 'false': 1, 'no': 1, 'ac': 1, 'autoconfirmed': 1, '+': 1})
+			this.say(con, room, "/modchat " + arg);
 	},
 	tell: 'say',
 	say: function (arg, by, room, con) {
