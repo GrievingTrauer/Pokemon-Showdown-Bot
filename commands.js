@@ -59,6 +59,26 @@ exports.commands = {
 		text += 'http://gamut-was-taken.github.io';
 		this.say(con, room, text);
 	},
+	faq: function (arg, by, room, con) {
+		var prefix;
+		if (this.canUse('faq', room, by) || room.charAt(0) === ',') {
+			prefix = '';
+		} else {
+			prefix = '/pm ' + by + ', ';
+		}
+		arg = toId(arg);
+		if (!arg) return false;
+		switch (arg) {
+			case "marsh":
+			case "marshmallon":
+				this.say(con, room, prefix + 'Q: **Warum ist Marsh aktuell kein Mod?**');
+				this.say(con, room, prefix + 'A: Der demote ist nur vorrübergehend und freiwillig, um sich besser auf das Lernen vor den Prüfungen (auf ein bestimmtes Fach bezogen) konzentrieren zu können. Gründe wie Power-Abuse, anderes schlechtes Benehmen oder Ähnliches spielen keine Rolle.');
+				break;
+			default:
+				this.say(con, room, prefix + 'Es gibt keinen FAQ Eintrag zu ' + arg + '.');
+				break;
+		}
+	},
 
 	/**
 	 * Dev commands
@@ -129,6 +149,7 @@ exports.commands = {
 			banword: 1,
 			viewbannedwords: 1,
 			git: 1,
+			faq: 1,
 			modchat: 1
 		};
 		var modOpts = {
