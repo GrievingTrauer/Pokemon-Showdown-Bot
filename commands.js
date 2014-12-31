@@ -79,6 +79,63 @@ exports.commands = {
 				break;
 		}
 	},
+	//Don't ask me about this command....
+	unfaq: "troll",
+	troll: function (arg, by, room, con) {
+		var prefix;
+		if (this.canUse('troll', room, by) || room.charAt(0) === ',') {
+			prefix = '';
+		} else {
+			prefix = '/pm ' + by + ', ';
+		}
+		arg = toId(arg);
+		if (!arg) return false;
+		switch (arg) {
+			case "fairyfee":
+				this.say(con, room, prefix + 'Q: **Warum hat Fairy Fee mich nicht lieb?**');
+				this.say(con, room, prefix + 'A: Das weiß leider niemand... __(T.T)__');
+				break;
+			case "trauer":
+				this.say(con, room, prefix + 'Q: **Wer ist Trauer?**');
+				this.say(con, room, prefix + 'A: Irgendso ein Troll bei dem Rechtemissbrauch keiner is. (Aussage asgdf)');
+				break;
+			case "freigeist":
+				this.say(con, room, prefix + 'Q: **Wer ist Freigeist?**');
+				this.say(con, room, prefix + 'A: Freigeist ist ein dufter Typ, betet ihn an! xD');
+				break;
+			case "highfly":
+				this.say(con, room, prefix + 'Q: **Wer ist Highfly?**');
+				this.say(con, room, prefix + 'A: High... wer?');
+				break;
+			case "silver99":
+				this.say(con, room, prefix + 'Q: **Wer ist silver99?**');
+				this.say(con, room, prefix + 'A: silver99 ist dieser Typ, der gerne mal getrollt wird, sobald es mal möglich ist. Sein Modlog auf einem anderen nicht weiter genannten Server besteht aus über 380 Zeilen von denen knapp 20 alleine Bans sind.');
+				break;
+			case "burgerfresser":
+				this.say(con, room, prefix + 'Q: **Wer ist burgerfresser?**');
+				this.say(con, room, prefix + 'A: Ist so ein Typ der sich durch jedes Turnier haxxt. **Mach deine Cheats aus burger!!11einseinself!!**');
+				break;
+			case "wertzu":
+				this.say(con, room, prefix + 'Q: **Wer ist wertzu?**');
+				this.say(con, room, prefix + 'A: Noch so ein Troll allerdings darf man bei ihm die Rechte nicht missbrauchen... __(T.T)__');
+				break;
+			case "durengard":
+				this.say(con, room, prefix + 'Q: **Wer ist Durengard?**');
+				this.say(con, room, prefix + 'A: ._.');
+				break;
+			case "faq":
+				this.say(con, room, prefix + 'Q: **Was ist eine FAQ?**');
+				this.say(con, room, prefix + 'A: FAQ sind eine Sammlung dummer Fragen inkl. Antworten die immer und immer wieder gestellt werden.');
+				break;
+			case "modlog":
+				this.say(con, room, prefix + 'Q: **Was ist ein Modlog?**');
+				this.say(con, room, prefix + 'A: Ein Modlog ist eine Datei auf dem Server die gerne mal von Mods durch sinnlose Aktionen wie Trauer muten zugemüllt wird. Oder die auf anderen nicht näher benannten Servern 20 Bans von silver99 enthalten xD');
+				break;
+			default:
+				this.say(con, room, prefix + 'Es gibt keinen Troll Eintrag zu ' + arg + '.');
+				break;
+		}
+	},
 
 	/**
 	 * Dev commands
@@ -150,6 +207,7 @@ exports.commands = {
 			viewbannedwords: 1,
 			git: 1,
 			faq: 1,
+			troll: 1,
 			modchat: 1
 		};
 		var modOpts = {
