@@ -123,6 +123,24 @@ exports.commands = {
 				this.say(con, room, prefix + 'Q: **Wer ist Durengard?**');
 				this.say(con, room, prefix + 'A: ._.');
 				break;
+			case "cavendish":
+				this.say(con, room, prefix + 'Q: **Wer ist Cavendish?**');
+				this.say(con, room, prefix + 'A: Cave\'n\'Dish is eine urzeitliche Variante des Bed\'n\'Breakfasts und wird heute noch von Höhlenmenschen bevorzugt.');
+				break;
+			case "tos":
+			case "sotsot":
+				this.say(con, room, prefix + 'Q: **Wer ist Tos?**');
+				this.say(con, room, prefix + 'A: ( ͡° ͜ʖ ͡°) Diese Frage beantwort ich nich!');
+				break;
+			case "resolut":
+				this.say(con, room, prefix + 'Q: **Wer ist Resolut?**');
+				this.say(con, room, prefix + 'A: Resolut hat sich nach dem Erlernen der Attacke Mystoschwert in einen Voice verwandelt.');
+				break;
+			case "crypto":
+			case "cryptodarkrai":
+				this.say(con, room, prefix + 'Q: **Wer ist Crypto Darkrai?**');
+				this.say(con, room, prefix + 'A: Crypto Darkrai ist ein dunkles Pokémon, dessen Herz künstlich verschlossen wurde. Leider hat niemand eine Krallmaschine um es fangen und erlösen zu können.');
+				break;
 			case "faq":
 				this.say(con, room, prefix + 'Q: **Was ist eine FAQ?**');
 				this.say(con, room, prefix + 'A: FAQ sind eine Sammlung dummer Fragen inkl. Antworten die immer und immer wieder gestellt werden.');
