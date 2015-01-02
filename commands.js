@@ -100,8 +100,6 @@ exports.commands = {
         			this.say(con, room, prefix + 'Q: **Was ist Challenge Cup?**');
         			this.say(con, room, prefix + 'A: Challenge Cup ist ein Tier bei dem man kein Team braucht. Am Beginn des Kampfes bekommt man 6 Pokémon wo alles zufällig aber legal ist. Mit diesen Pokémon kämpft man dann.');
 				break;
-
-
 			default:
 				this.say(con, room, prefix + 'Es gibt keinen FAQ Eintrag zu ' + arg + '.');
 				break;
