@@ -71,7 +71,7 @@ exports.commands = {
 		switch (arg) {
 			case "voice":
 				this.say(con, room, prefix + 'Q: **Wie werde ich Voice?**');
-				this.say(con, room, prefix + 'A: http://ps-deutsche.forumieren.com/t442p60-raumvoices');
+				this.say(con, room, prefix + 'A: http://ps-deutsche.forumieren.com/t544-wie-werde-ich-raumvoice#3166');
 				break;
 			case "rr":
 			case "roundrobin":
