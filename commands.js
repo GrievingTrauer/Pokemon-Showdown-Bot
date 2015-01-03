@@ -100,6 +100,15 @@ exports.commands = {
         			this.say(con, room, prefix + 'Q: **Was ist Challenge Cup?**');
         			this.say(con, room, prefix + 'A: Challenge Cup ist ein Tier bei dem man kein Team braucht. Am Beginn des Kampfes bekommt man 6 Pokémon wo alles zufällig aber legal ist. Mit diesen Pokémon kämpft man dann.');
 				break;
+			case "catchevolve":
+			case "ce":
+				this.say(con, room, prefix + 'Q: **Was ist Catch&Evolve?**');
+				this.say(con, room, prefix + 'A: Catch&Evolve ist ein meist usergemachtes Turnier welches fast immer über Challonge abläuft. Die Regeln stehen hier goo.gl/jzcRqn.');
+				break;
+			case "Challonge":
+				this.say(con, room, prefix + 'Q: **Was ist Challonge?**');
+				this.say(con, room, prefix + 'A: Challonge ist eine Website, die Brackets für ein Turnier generiert. Damit können auch User, die auf dem Server keine in-Chat Turniere machen dürfen, Turniere veranstalten. Link ist challonge.com.');
+				break;
 			default:
 				this.say(con, room, prefix + 'Es gibt keinen FAQ Eintrag zu ' + arg + '.');
 				break;
