@@ -75,29 +75,29 @@ exports.commands = {
 				break;
 			case "rr":
 			case "roundrobin":
-				this.say(con, room, prefix + 'Q: **Was ist Round Robin**');
-				this.say(con, room, prefix + 'A: Round Robin ist ein Turnierformat bei dem jeder Teilnehmer gegen jeden anderen Teilnehmer muss. Der Sieger wird dann anhand der insgesamt gewonnenen Spielen ermittelt.');
+				this.say(con, room, prefix + 'Q: **Was ist Round Robin?**');
+				this.say(con, room, prefix + 'A: "Round Robin" ist ein Turnierformat, bei dem jeder Teilnehmer gegen jeden anderen Teilnehmer kämpfen muss. Der Sieger wird dann anhand der insgesamt gewonnenen Spiele ermittelt.');
 				break;
 			case "de":
 			case "doubleelimination":
 				this.say(con, room, prefix + 'Q: **Was ist Double Elimination?**');
-				this.say(con, room, prefix + 'A: Double Elimination ist ein Turnierformat bei dem man zweimal verlieren muss um auszuscheiden. Nach der ersten Niederlage kommt man in die Verlierer-Brackets. Wenn beim Finale der aus dem Verlierer-Bracket gewinnt, gibt es ein zweites Finale.');
+				this.say(con, room, prefix + 'A: "Double Elimination" ist ein Turnierformat, bei dem man zweimal verlieren muss um auszuscheiden. Nach der ersten Niederlage kommt man in die Verlierer-Brackets. Wenn beim Finale der Spieler aus dem Verlierer-Bracket gewinnt, gibt es ein zweites Finale.');
 				break;
 			case "se":
 			case "singleelimination":
 				this.say(con, room, prefix + 'Q: **Was ist Single Elimination?**');
-				this.say(con, room, prefix + 'A: Single Elimination ist ein Turnierformat bei dem man nach einer Niederlage ausscheidet.');
+				this.say(con, room, prefix + 'A: "Single Elimination" ist ein Turnierformat, bei dem man nach einer Niederlage ausscheidet.');
 				break;
 			case "cc1v1":
 			case "cc1vs1":
 			case "challengecup1vs1":
 				this.say(con, room, prefix + 'Q: **Was ist Challenge Cup 1-vs-1?**');
-				this.say(con, room, prefix + 'A: Bei Challenge Cup 1-vs-1 bekommt man am Beginn des Kampfes 6 Pokémon wo alles zufällig aber legal ist. Dann wählt man eines dieser Pokémon aus und kämpft mit NUR dem gegen das vom Gegner ausgewählten Pokémon.');
+				this.say(con, room, prefix + 'A: Bei "Challenge Cup 1-vs-1" bekommt man zu Beginn des Kampfes 6 Pokémon, deren Attacken, Fähigkeiten etc. zufällig, aber legal sind. Anschließend wählt man eines dieser Pokémon aus und kämpft mit diesem einen gegen das vom Gegner ausgewählte Pokémon.');
 				break;
 			case "cc":
 			case "challengecup":
 				this.say(con, room, prefix + 'Q: **Was ist Challenge Cup?**');
-				this.say(con, room, prefix + 'A: Challenge Cup ist ein Tier bei dem man kein Team braucht. Am Beginn des Kampfes bekommt man 6 Pokémon wo alles zufällig aber legal ist. Mit diesen Pokémon kämpft man dann.');
+				this.say(con, room, prefix + 'A: "Challenge Cup" ist ein Tier, bei dem man kein Team braucht. Zu Beginn des Kampfes bekommt man 6 Pokémon, deren Attacken, Items etc. zufällig, aber legal sind. Mit diesen Pokémon kämpft man dann.');
 				break;
 			default:
 				this.say(con, room, prefix + 'Es gibt keinen FAQ Eintrag zu ' + arg + '.');
