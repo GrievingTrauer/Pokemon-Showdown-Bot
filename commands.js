@@ -74,6 +74,10 @@ exports.commands = {
 				this.say(con, room, prefix + 'Q: **Warum ist Marsh aktuell kein Mod?**');
 				this.say(con, room, prefix + 'A: Der demote ist nur vorrübergehend und freiwillig, um sich besser auf das Lernen vor den Prüfungen (auf ein bestimmtes Fach bezogen) konzentrieren zu können. Gründe wie Power-Abuse, anderes schlechtes Benehmen oder Ähnliches spielen keine Rolle.');
 				break;
+			case "voice":
+				this.say(con, room, prefix + 'Q: **Wie werde ich Voice?**');
+				this.say(con, room, prefix + 'A: http://ps-deutsche.forumieren.com/t442p60-raumvoices');
+				break;
 			default:
 				this.say(con, room, prefix + 'Es gibt keinen FAQ Eintrag zu ' + arg + '.');
 				break;
