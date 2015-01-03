@@ -76,7 +76,7 @@ exports.commands = {
 				break;
     			case "rr":
     			case "roundrobin":
-        			this.say(con, room, prefix + 'Q: **Was ist Round Robin**');
+        			this.say(con, room, prefix + 'Q: **Was ist Round Robin?**');
         			this.say(con, room, prefix + 'A: Round Robin ist ein Turnierformat bei dem jeder Teilnehmer gegen jeden anderen Teilnehmer muss. Der Sieger wird dann anhand der insgesamt gewonnenen Spielen ermittelt.');
     				break;
     			case "de":
