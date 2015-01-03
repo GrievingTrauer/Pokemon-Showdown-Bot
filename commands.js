@@ -679,6 +679,7 @@ exports.commands = {
 		this.say(con, room, text);
 	},
 
+	rt: "randomtype",
 	randomtype: function (arg, by, room, con) {
 		var text;
 		if (this.canUse('randomtype', room, by) || room.charAt(0) === ',') {
@@ -687,28 +688,10 @@ exports.commands = {
 			text = '/pm ' + by + ', ';
 		}
 
-		var rand = Math.floor(18 * Math.random()) + 1;
+		var types = ["Fairy", "Fire", "Flying", "Ice", "Poison", "Psychic", "Dark", "Electric", "Grass", "Ground", "Rock", "Water", "Dragon", "Bug", "Normal", "Steel", "Fighting", "Ghost"];
+		var rand = Math.floor(types.length * Math.random());
 
-		switch (rand) {
-			case 1: text += "Fairy"; break;
-			case 2: text += "Fire"; break;
-			case 3: text += "Flying"; break;
-			case 4: text += "Ice"; break;
-			case 5: text += "Poison"; break;
-			case 6: text += "Psychic"; break;
-			case 7: text += "Dark"; break;
-			case 8: text += "Electric"; break;
-			case 9: text += "Grass"; break;
-			case 10: text += "Ground"; break;
-			case 11: text += "Rock"; break;
-			case 12: text += "Water"; break;
-			case 13: text += "Dragon"; break;
-			case 14: text += "Bug"; break;
-			case 15: text += "Normal"; break;
-			case 16: text += "Steel"; break;
-			case 17: text += "Fighting"; break;
-			case 18: text += "Ghost"; break;
-		}
+		text += types[rand];
 		this.say(con, room, text);
 	}
 
