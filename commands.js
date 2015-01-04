@@ -100,6 +100,7 @@ exports.commands = {
 				this.say(con, room, prefix + 'A: "Challenge Cup" ist ein Tier, bei dem man kein Team braucht. Zu Beginn des Kampfes bekommt man 6 Pokémon, deren Attacken, Items etc. zufällig, aber legal sind. Mit diesen Pokémon kämpft man dann.');
 				break;
 			case "catchevolve":
+			case "ce":
 				this.say(con, room, prefix + 'Q: **Was ist Catch&Evolve?**');
 				this.say(con, room, prefix + 'A: Catch&Evolve ist ein (häufig von Usern erstelltes) Turnier, welches meist über Challonge abläuft. Die Regeln stehen hier: http://tinyurl.com/pc8pksg.');
 				break;
@@ -110,6 +111,10 @@ exports.commands = {
 			case "vgc":
 				this.say(con, room, prefix + 'Q: **Was ist VGC?**');
 				this.say(con, room, prefix + 'A: "VGC" ist ein spezieller Doppelkampf-Modus, der auf offiziellen Veranstaltungen gespielt wird. Vor dem Kampf sieht man das gegnerische Team und muss anschließend vier seiner sechs Pokémon auswählen, mit denen man kämpfen möchte. Die genauen Regeln wechseln jährlich.');
+				break;
+			case "scouting":
+				this.say(con, room, prefix + 'Q: **Was ist Scouting?**');
+				this.say(con, room, prefix + 'A: Scouting bezeichnet die Beobachtung von Turnierkämpfen als Turnierteilnehmer, um sich aus der Kenntnis gegnerischer Teams einen Vorteil gegenüber anderen Teilnehmern zu verschaffen (Ausgenommen natürlich Tiers, bei denen kein eigenes Team erforderlich ist).');
 				break;
 			default:
 				this.say(con, room, prefix + 'Es gibt keinen FAQ Eintrag zu ' + arg + '.');
